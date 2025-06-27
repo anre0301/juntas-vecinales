@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Resultado de Consulta - JVSC</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-image: url('https://pbs.twimg.com/media/FAelN6IWYAAtrM4.jpg');
+      background-size: cover;
+      background-position: center;
+      filter: blur(10px);
+      z-index: -1;
+    }
+
+    .container {
+      background-color: rgba(255, 255, 255, 0.95);
+      color: #333;
+      padding: 25px;
+      border-radius: 16px;
+      max-width: 460px;
+      width: 90%;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
+      margin: 30px auto;
+      text-align: center;
+    }
+
+    img {
+      display: block;
+      margin: 0 auto 15px;
+      max-width: 90%;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    }
+
+    h2 {
+      margin: 5px 0 10px;
+      color: #4f1a74;
+    }
+
+    .verificado {
+      font-weight: bold;
+      color: #fff;
+      background-color: #4caf50;
+      padding: 8px 16px;
+      border-radius: 10px;
+      display: inline-block;
+      margin-bottom: 12px;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .vence {
+      background-color: #e3f2fd;
+      color: #0d47a1;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      display: inline-block;
+      margin-top: 8px;
+    }
+
+    p {
+      margin: 5px 0;
+      font-size: 15px;
+      text-align: left;
+    }
+
+    .volver-btn {
+      margin-top: 20px;
+      background-color: #4f1a74;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .volver-btn:hover {
+      background-color: #3a0e5d;
+    }
+
+    .not-found {
+      font-size: 20px;
+      color: #fff;
+      background-color: #e53935;
+      padding: 16px;
+      border-radius: 14px;
+      font-weight: bold;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+      max-width: 400px;
+      margin: 40px auto;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  {% if persona %}
+    <div class="container">
+      {% if imagen %}
+        <img src="{{ imagen }}" alt="Foto del DNI">
+      {% endif %}
+      <h2>{{ persona.nombres }} {{ persona.apellidos }}</h2>
+      <div class="verificado">✅ MIEMBRO VERIFICADO</div>
+
+      <p><strong>DNI:</strong> {{ persona.dni }}</p>
+      <p><strong>Fecha de creación:</strong> {{ persona.fecha_creacion or persona.fecha }}</p>
+
+      {% set fecha_parts = (persona.fecha_creacion or persona.fecha).split('/') %}
+      {% if fecha_parts | length == 3 %}
+        {% set dia = fecha_parts[0] %}
+        {% set mes = fecha_parts[1] %}
+        {% set anio = fecha_parts[2]|int + 2 %}
+        <div class="vence"><strong>VENCE:</strong> {{ dia }}/{{ mes }}/{{ anio }}</div>
+      {% endif %}
+
+      <p><strong>Región Policial:</strong> {{ persona.region_policial }}</p>
+      <p><strong>División Policial:</strong> {{ persona.division_policial }}</p>
+      <p><strong>Departamento:</strong> {{ persona.departamento }}</p>
+      <p><strong>Provincia:</strong> {{ persona.provincia }}</p>
+      <p><strong>Distrito:</strong> {{ persona.distrito }}</p>
+      <p><strong>Comisaría:</strong> {{ persona.comisaria }}</p>
+      <p><strong>Nombre JJVV:</strong> {{ persona.nombre_jjvv }}</p>
+      <p><strong>Resolución:</strong> {{ persona.resolucion }}</p>
+      <p><strong>Zona:</strong> {{ persona.zona }}</p>
+      <p><strong>Edad:</strong> {{ persona.edad }}</p>
+      <p><strong>Sexo:</strong> {{ persona.sexo }}</p>
+      <p><strong>Nacionalidad:</strong> {{ persona.nacionalidad }}</p>
+      <p><strong>Ocupación:</strong> {{ persona.ocupacion }}</p>
+      <p><strong>Dirección:</strong> {{ persona.direccion }}</p>
+      <p><strong>Cargo:</strong> {{ persona.cargo }}</p>
+      <p><strong>Teléfono:</strong> {{ persona.telefono }}</p>
+
+      <a href="/" class="volver-btn">🔙 Volver</a>
+    </div>
+  {% else %}
+    <div class="not-found">
+      ❌ NO ERES MIEMBRO DE LAS JVSC.
+      <br><br>
+      <a href="/" class="volver-btn">🔙 Volver</a>
+    </div>
+  {% endif %}
+</body>
+</html>
