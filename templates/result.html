@@ -34,6 +34,7 @@
       box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
       margin: 30px auto;
       text-align: center;
+      min-height: 90vh;
     }
 
     img {
@@ -76,32 +77,76 @@
       text-align: left;
     }
 
-    .volver-btn {
-      margin-top: 20px;
-      background-color: #4f1a74;
+    .volver-lindo {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: linear-gradient(135deg, #4f1a74, #6e3a90);
+      padding: 14px 26px;
+      font-size: 16px;
+      font-weight: bold;
       color: white;
       border: none;
-      padding: 10px 20px;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-
-    .volver-btn:hover {
-      background-color: #3a0e5d;
-    }
-
-    .not-found {
-      font-size: 20px;
-      color: #fff;
-      background-color: #e53935;
-      padding: 16px;
       border-radius: 14px;
-      font-weight: bold;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-      max-width: 400px;
-      margin: 40px auto;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+      text-decoration: none;
+      transition: all 0.3s ease-in-out;
+      margin-top: 30px;
+    }
+
+    .volver-lindo:hover {
+      background: linear-gradient(135deg, #3a0e5d, #5d2a7a);
+      transform: scale(1.05);
+    }
+
+    .icon {
+      font-size: 20px;
+      animation: pulse 1.2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.2); opacity: 0.8; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .not-member-container {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(0, 0, 0, 0.75);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
       text-align: center;
+      padding: 20px;
+    }
+
+    .x-circle {
+      font-size: 60px;
+      color: #ff4d4d;
+      background-color: white;
+      border-radius: 50%;
+      width: 80px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      animation: pop 0.4s ease;
+    }
+
+    .not-member-text {
+      font-size: 22px;
+      color: white;
+      margin-bottom: 25px;
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0.5); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
     }
   </style>
 </head>
@@ -142,13 +187,17 @@
       <p><strong>Cargo:</strong> {{ persona.cargo }}</p>
       <p><strong>Teléfono:</strong> {{ persona.telefono }}</p>
 
-      <a href="/" class="volver-btn">🔙 Volver</a>
+      <a href="/" class="volver-lindo">
+        <span class="icon">🔙</span> Volver al inicio
+      </a>
     </div>
   {% else %}
-    <div class="not-found">
-      ❌ NO ERES MIEMBRO DE LAS JVSC.
-      <br><br>
-      <a href="/" class="volver-btn">🔙 Volver</a>
+    <div class="not-member-container">
+      <div class="x-circle">✖</div>
+      <h2 class="not-member-text">NO ERES MIEMBRO DE LAS JJ.VV</h2>
+      <a href="/" class="volver-lindo">
+        <span class="icon">🏠</span> Volver al inicio
+      </a>
     </div>
   {% endif %}
 </body>

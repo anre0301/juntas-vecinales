@@ -15,6 +15,7 @@
       padding: 20px;
       position: relative;
       overflow: hidden;
+      background: #000;
     }
 
     body::before {
@@ -52,19 +53,17 @@
     }
 
     input[type="text"] {
-      width: 100%;
-      max-width: 280px;
-      display: block;
+      width: 90%;
       margin: 0 auto 14px;
       padding: 10px 12px;
       border: 1px solid #ccc;
       border-radius: 8px;
       font-size: 14px;
+      display: block;
     }
 
     button {
-      max-width: 280px;
-      width: 100%;
+      width: 90%;
       padding: 12px;
       background-color: #4f1a74;
       color: white;
@@ -92,6 +91,42 @@
       font-weight: bold;
     }
 
+    /* Mensaje de error bonito */
+    .error-msg {
+      margin-top: 20px;
+      color: #fff;
+      background-color: #e74c3c;
+      padding: 15px;
+      border-radius: 12px;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      animation: shake 0.3s ease-in-out;
+    }
+
+    .error-icon {
+      width: 24px;
+      height: 24px;
+      background-color: white;
+      color: #e74c3c;
+      border-radius: 50%;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      50% { transform: translateX(5px); }
+      75% { transform: translateX(-5px); }
+      100% { transform: translateX(0); }
+    }
+
     @media (max-width: 480px) {
       .container {
         padding: 20px 15px;
@@ -107,11 +142,20 @@
   <div class="container">
     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQHuQJPNg4-qnILysODBpxrPPEO4g7BpT3VAA&s" alt="Logo JVSC" class="logo">
     <h2>🔍 Verificación de Miembro JVSC</h2>
+
     <form method="post">
       <input type="text" name="dni" placeholder="Ingrese DNI" maxlength="8" pattern="[0-9]{8}" required>
-      <input type="text" name="fecha" placeholder="Ingrese fecha (DD/MM/AAAA)" pattern="\d{1,2}/\d{1,2}/\d{4}" required>
+      <input type="text" name="fecha" placeholder="Ingrese fecha (DD/MM/AAAA)" pattern="^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[012])/[0-9]{4}$" required>
       <button type="submit">Consultar</button>
     </form>
+
+    {% if error %}
+      <div class="error-msg">
+        <div class="error-icon">✖</div>
+        {{ error }}
+      </div>
+    {% endif %}
+
     <div class="footer">
       Sistema de Consulta de <span>Juntas Vecinales</span><br>
       Desarrollado con responsabilidad e ingenio 🛡️

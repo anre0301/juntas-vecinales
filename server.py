@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
 import os
 import json
+import re
 
 app = Flask(__name__)
 
@@ -76,6 +77,11 @@ def index():
         fecha = request.form.get("fecha")
         encontrado = None
 
+        # Validación exacta del formato DD/MM/AAAA
+        formato_valido = re.fullmatch(r"\d{2}/\d{2}/\d{4}", fecha)
+        if not formato_valido:
+            return render_template("index.html", error="❌ Ingrese la fecha con el formato correcto: DD/MM/AAAA")
+
         for filename in os.listdir(DATA_DIR):
             if filename.endswith(".json"):
                 filepath = os.path.join(DATA_DIR, filename)
@@ -83,7 +89,8 @@ def index():
                     try:
                         data = json.load(f)
                         for persona in data:
-                            if persona.get("dni") == dni and (persona.get("fecha_creacion") or persona.get("fecha")) == fecha:
+                            fecha_persona = persona.get("fecha_creacion") or persona.get("fecha")
+                            if persona.get("dni") == dni and fecha_persona == fecha:
                                 encontrado = persona
                                 break
                     except Exception as e:
@@ -95,7 +102,6 @@ def index():
         return render_template("result.html", persona=encontrado, imagen=image_url)
 
     return render_template("index.html")
-
 
 if __name__ == "__main__":
     import os
