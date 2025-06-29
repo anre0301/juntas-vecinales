@@ -134,28 +134,29 @@ def eliminar_dato():
     if not dni:
         return "DNI no proporcionado", 400
 
-    data_path = os.path.join(DATA_DIR, "data.json")
-
-    if not os.path.exists(data_path):
-        return "Archivo data.json no existe", 404
-
     try:
-        with open(data_path, "r", encoding="utf-8") as f:
-            data = json.load(f)
-    except:
-        data = []
+        if os.path.exists(DATA_JSON_PATH):
+            with open(DATA_JSON_PATH, "r", encoding="utf-8") as f:
+                try:
+                    data = json.load(f)
+                except json.JSONDecodeError:
+                    data = []
 
-    # Eliminar persona con ese DNI
-    nueva_data = [p for p in data if str(p.get("dni")) != str(dni)]
+            nueva_data = [p for p in data if str(p.get("dni")) != str(dni)]
 
-    with open(data_path, "w", encoding="utf-8") as f:
-        json.dump(nueva_data, f, indent=2, ensure_ascii=False)
+            with open(DATA_JSON_PATH, "w", encoding="utf-8") as f:
+                json.dump(nueva_data, f, indent=2, ensure_ascii=False)
 
-    # Eliminar del diccionario IMAGENES_DNI si está
-    if dni in IMAGENES_DNI:
-        del IMAGENES_DNI[dni]
+        # También eliminar del diccionario de imágenes
+        if dni in IMAGENES_DNI:
+            del IMAGENES_DNI[dni]
+            with open("imagenes_dni.json", "w", encoding="utf-8") as f:
+                json.dump(IMAGENES_DNI, f, indent=2, ensure_ascii=False)
 
-    return "Eliminado correctamente", 200
+        return "Eliminado correctamente", 200
+
+    except Exception as e:
+        return f"Error al eliminar: {str(e)}", 500
 
 # === NUEVA RUTA PARA RECIBIR DATOS ===
 @app.route("/api/subir_dato", methods=["POST"])
