@@ -99,6 +99,57 @@ def index():
 
     return render_template("index.html")
 
+@app.route("/agregar_dato", methods=["POST"])
+def agregar_dato():
+    persona = request.json.get("persona")
+    imagen_url = request.json.get("imagen_url")
+
+    if not persona or not imagen_url:
+        return "Datos inválidos", 400
+
+    dni = persona.get("dni")
+    if dni:
+        IMAGENES_DNI[dni] = imagen_url
+
+    data_path = os.path.join(DATA_DIR, "data.json")
+    if os.path.exists(data_path):
+        with open(data_path, "r", encoding="utf-8") as f:
+            try:
+                data = json.load(f)
+            except:
+                data = []
+    else:
+        data = []
+
+    data.append(persona)
+    with open(data_path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
+
+    return "OK", 200
+
+@app.route("/eliminar_dato", methods=["POST"])
+def eliminar_dato():
+    dni = request.json.get("dni")
+    if not dni:
+        return "DNI no proporcionado", 400
+
+    data_path = os.path.join(DATA_DIR, "data.json")
+    if not os.path.exists(data_path):
+        return "Archivo data.json no existe", 404
+
+    with open(data_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    nueva_lista = [p for p in data if str(p.get("dni")) != str(dni)]
+
+    with open(data_path, "w", encoding="utf-8") as f:
+        json.dump(nueva_lista, f, indent=2, ensure_ascii=False)
+
+    if dni in IMAGENES_DNI:
+        del IMAGENES_DNI[dni]
+
+    return "Eliminado", 200
+
 # === NUEVA RUTA PARA RECIBIR DATOS ===
 @app.route("/api/subir_dato", methods=["POST"])
 def subir_dato():
