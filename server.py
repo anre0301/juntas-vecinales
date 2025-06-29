@@ -6,9 +6,14 @@ import re
 app = Flask(__name__)
 
 DATA_DIR = os.path.join(os.getcwd(), "Data")
+DATA_JSON_PATH = os.path.join(DATA_DIR, "data.json")
 
-# Diccionario de imágenes de DNIs
-IMAGENES_DNI = {
+# Cargar datos de imagen al iniciar
+if os.path.exists("imagenes_dni.json"):
+    with open("imagenes_dni.json", "r", encoding="utf-8") as f:
+        IMAGENES_DNI = json.load(f)
+else:
+    IMAGENES_DNI = {
     "00811758": "https://i.ibb.co/Cs5MSDj6/00811758.jpg",
     "16429103": "https://i.ibb.co/2rXqdKn/16429103.jpg",
     "16445545": "https://i.ibb.co/7d2wbCKN/16445545.jpg",
@@ -66,8 +71,8 @@ IMAGENES_DNI = {
     "80219071": "https://i.ibb.co/ccDYbDWQ/80219071.jpg",
     "80219749": "https://i.ibb.co/qGMJxmB/80219749.jpg",
     "80256691": "https://i.ibb.co/TxFQrhqN/80256691.jpg",
-    "80642437": "https://i.ibb.co/kskNn6rp/80642437.jpg"
-}
+    "80642437": "https://i.ibb.co/kskNn6rp/80642437.jpg"    
+    }
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -76,53 +81,83 @@ def index():
         fecha = request.form.get("fecha")
         encontrado = None
 
-        # Validación exacta del formato DD/MM/AAAA
         formato_valido = re.fullmatch(r"\d{2}/\d{2}/\d{4}", fecha)
         if not formato_valido:
             return render_template("index.html", error="❌ Ingrese la fecha con el formato correcto: DD/MM/AAAA")
 
-        for filename in os.listdir(DATA_DIR):
-            if filename.endswith(".json"):
-                filepath = os.path.join(DATA_DIR, filename)
-                with open(filepath, "r", encoding="utf-8") as f:
-                    try:
-                        data = json.load(f)
-                        for persona in data:
-                            fecha_persona = persona.get("fecha_creacion") or persona.get("fecha")
-                            if persona.get("dni") == dni and fecha_persona == fecha:
-                                encontrado = persona
-                                break
-                    except Exception as e:
-                        print(f"Error al procesar {filename}: {e}")
-            if encontrado:
-                break
+        if os.path.exists(DATA_JSON_PATH):
+            with open(DATA_JSON_PATH, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                for persona in data:
+                    fecha_persona = persona.get("fecha_creacion") or persona.get("fecha")
+                    if persona.get("dni") == dni and fecha_persona == fecha:
+                        encontrado = persona
+                        break
 
         image_url = IMAGENES_DNI.get(dni)
         return render_template("result.html", persona=encontrado, imagen=image_url)
 
     return render_template("index.html")
 
-
-# ✅ NUEVA RUTA PARA RECIBIR JSONS DESDE TU OTRO PROYECTO
-@app.route("/api/subir_json", methods=["POST"])
-def recibir_datos_json():
+# === NUEVA RUTA PARA RECIBIR DATOS ===
+@app.route("/api/subir_dato", methods=["POST"])
+def subir_dato():
     try:
-        data = request.get_json()
-        filename = data.get("filename")
-        contenido = data.get("contenido")
+        tipo = request.form.get("tipo")  # nuevo_miembro o eliminar_miembro
 
-        if not filename or not contenido:
-            return jsonify({"status": "error", "msg": "Faltan campos obligatorios"}), 400
+        if tipo == "nuevo_miembro":
+            dni = request.form.get("dni")
+            json_data = json.loads(request.form.get("data"))
+            imagen_url = request.form.get("imagen_url")
 
-        ruta = os.path.join(DATA_DIR, filename)
-        with open(ruta, "w", encoding="utf-8") as f:
-            json.dump(contenido, f, indent=2, ensure_ascii=False)
+            # Agregar imagen al diccionario
+            IMAGENES_DNI[dni] = imagen_url
+            with open("imagenes_dni.json", "w", encoding="utf-8") as f:
+                json.dump(IMAGENES_DNI, f, indent=2, ensure_ascii=False)
 
-        return jsonify({"status": "ok", "msg": f"{filename} guardado correctamente"})
+            # Agregar JSON al data.json
+            if os.path.exists(DATA_JSON_PATH):
+                with open(DATA_JSON_PATH, "r", encoding="utf-8") as f:
+                    lista = json.load(f)
+            else:
+                lista = []
+
+            lista.append(json_data)
+
+            with open(DATA_JSON_PATH, "w", encoding="utf-8") as f:
+                json.dump(lista, f, indent=2, ensure_ascii=False)
+
+            return jsonify({"status": "ok", "msg": "Miembro agregado exitosamente"})
+
+        elif tipo == "eliminar_miembro":
+            dni = request.form.get("dni")
+            eliminado = False
+
+            if os.path.exists(DATA_JSON_PATH):
+                with open(DATA_JSON_PATH, "r", encoding="utf-8") as f:
+                    lista = json.load(f)
+
+                nueva_lista = [p for p in lista if p.get("dni") != dni]
+                eliminado = len(lista) != len(nueva_lista)
+
+                with open(DATA_JSON_PATH, "w", encoding="utf-8") as f:
+                    json.dump(nueva_lista, f, indent=2, ensure_ascii=False)
+
+            if dni in IMAGENES_DNI:
+                del IMAGENES_DNI[dni]
+                with open("imagenes_dni.json", "w", encoding="utf-8") as f:
+                    json.dump(IMAGENES_DNI, f, indent=2, ensure_ascii=False)
+
+            if eliminado:
+                return jsonify({"status": "ok", "msg": f"Miembro con DNI {dni} eliminado"})
+            else:
+                return jsonify({"status": "error", "msg": "DNI no encontrado"}), 404
+
+        else:
+            return jsonify({"status": "error", "msg": "Tipo de operación no válido"}), 400
 
     except Exception as e:
         return jsonify({"status": "error", "msg": str(e)}), 500
-
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
