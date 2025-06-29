@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 import os
 import json
 import re
@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 DATA_DIR = os.path.join(os.getcwd(), "Data")
 
-# Diccionario de imágenes de DNIs (usa solo los que compartiste)
+# Diccionario de imágenes de DNIs
 IMAGENES_DNI = {
     "00811758": "https://i.ibb.co/Cs5MSDj6/00811758.jpg",
     "16429103": "https://i.ibb.co/2rXqdKn/16429103.jpg",
@@ -69,7 +69,6 @@ IMAGENES_DNI = {
     "80642437": "https://i.ibb.co/kskNn6rp/80642437.jpg"
 }
 
-
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "POST":
@@ -103,8 +102,28 @@ def index():
 
     return render_template("index.html")
 
+
+# ✅ NUEVA RUTA PARA RECIBIR JSONS DESDE TU OTRO PROYECTO
+@app.route("/api/subir_json", methods=["POST"])
+def recibir_datos_json():
+    try:
+        data = request.get_json()
+        filename = data.get("filename")
+        contenido = data.get("contenido")
+
+        if not filename or not contenido:
+            return jsonify({"status": "error", "msg": "Faltan campos obligatorios"}), 400
+
+        ruta = os.path.join(DATA_DIR, filename)
+        with open(ruta, "w", encoding="utf-8") as f:
+            json.dump(contenido, f, indent=2, ensure_ascii=False)
+
+        return jsonify({"status": "ok", "msg": f"{filename} guardado correctamente"})
+
+    except Exception as e:
+        return jsonify({"status": "error", "msg": str(e)}), 500
+
+
 if __name__ == "__main__":
-    import os
     port = int(os.environ.get("PORT", 5000))
     app.run(debug=False, host="0.0.0.0", port=port)
-
