@@ -135,6 +135,7 @@ def eliminar_dato():
         return "DNI no proporcionado", 400
 
     try:
+        # Leer la base de datos
         if os.path.exists(DATA_JSON_PATH):
             with open(DATA_JSON_PATH, "r", encoding="utf-8") as f:
                 try:
@@ -142,12 +143,13 @@ def eliminar_dato():
                 except json.JSONDecodeError:
                     data = []
 
+            # Filtrar la lista sin el DNI
             nueva_data = [p for p in data if str(p.get("dni")) != str(dni)]
 
             with open(DATA_JSON_PATH, "w", encoding="utf-8") as f:
                 json.dump(nueva_data, f, indent=2, ensure_ascii=False)
 
-        # También eliminar del diccionario de imágenes
+        # Eliminar imagen del diccionario
         if dni in IMAGENES_DNI:
             del IMAGENES_DNI[dni]
             with open("imagenes_dni.json", "w", encoding="utf-8") as f:
