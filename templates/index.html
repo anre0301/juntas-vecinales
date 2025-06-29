@@ -4,18 +4,20 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Consulta JVSC - Verificación de Miembro</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-oHYEp9I0V+qAfWy6xF0XxN6JNoYrG9nIoNDLrCvFM2qOBZYsGG8C6NPU4cX5FCvyoEmyZ0hGk6wbcQ0+QGpN4w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Rubik', sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
       padding: 20px;
-      position: relative;
-      overflow: hidden;
       background: #000;
+      overflow: hidden;
+      position: relative;
     }
 
     body::before {
@@ -24,66 +26,70 @@
       top: 0; left: 0; right: 0; bottom: 0;
       background: url('https://pbs.twimg.com/media/FAelN6IWYAAtrM4.jpg') no-repeat center center fixed;
       background-size: cover;
-      filter: blur(8px);
+      filter: blur(10px) brightness(0.6);
       z-index: -1;
     }
 
     .container {
-      background-color: rgba(255, 255, 255, 0.92);
-      color: #333;
-      padding: 25px 20px;
-      border-radius: 18px;
-      max-width: 400px;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 30px 25px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      max-width: 420px;
       width: 100%;
-      box-shadow: 0 0 18px rgba(0, 0, 0, 0.35);
       text-align: center;
-      z-index: 1;
     }
 
     .logo {
-      width: 90px;
+      width: 85px;
       height: auto;
-      margin-bottom: 15px;
+      margin-bottom: 12px;
+      border-radius: 12px;
+      box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
     }
 
     h2 {
       color: #4f1a74;
-      font-size: 20px;
-      margin: 10px 0 25px;
+      font-size: 22px;
+      font-weight: 600;
+      margin: 8px 0 24px;
     }
 
     input[type="text"] {
-      width: 90%;
-      margin: 0 auto 14px;
-      padding: 10px 12px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 14px;
-      display: block;
+      width: 92%;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1.5px solid #ccc;
+      font-size: 15px;
+      margin-bottom: 18px;
+      outline: none;
+      transition: border 0.3s;
+    }
+
+    input[type="text"]:focus {
+      border-color: #4f1a74;
     }
 
     button {
-      width: 90%;
+      width: 92%;
       padding: 12px;
-      background-color: #4f1a74;
+      background: #4f1a74;
       color: white;
       font-size: 16px;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
-      transition: background-color 0.3s ease;
-      display: block;
-      margin: 0 auto;
+      transition: background 0.3s ease;
     }
 
     button:hover {
-      background-color: #3b1159;
+      background: #3a1055;
     }
 
     .footer {
-      margin-top: 20px;
+      margin-top: 25px;
       font-size: 13px;
-      color: #666;
+      color: #555;
     }
 
     .footer span {
@@ -91,12 +97,11 @@
       font-weight: bold;
     }
 
-    /* Mensaje de error bonito */
     .error-msg {
       margin-top: 20px;
-      color: #fff;
       background-color: #e74c3c;
-      padding: 15px;
+      color: white;
+      padding: 14px;
       border-radius: 12px;
       font-size: 15px;
       display: flex;
@@ -107,16 +112,16 @@
     }
 
     .error-icon {
-      width: 24px;
-      height: 24px;
-      background-color: white;
+      font-size: 18px;
+      background: white;
       color: #e74c3c;
       border-radius: 50%;
-      font-weight: bold;
+      width: 26px;
+      height: 26px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 18px;
+      font-weight: bold;
     }
 
     @keyframes shake {
@@ -129,7 +134,7 @@
 
     @media (max-width: 480px) {
       .container {
-        padding: 20px 15px;
+        padding: 22px 16px;
       }
 
       input[type="text"], button {
@@ -141,17 +146,16 @@
 <body>
   <div class="container">
     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQHuQJPNg4-qnILysODBpxrPPEO4g7BpT3VAA&s" alt="Logo JVSC" class="logo">
-    <h2>🔍 Verificación de Miembro JJ.VV</h2>
+    <h2><i class="fas fa-user-check"></i> Verificación de Miembro JVSC</h2>
 
     <form method="post">
       <input type="text" name="dni" placeholder="Ingrese DNI" maxlength="8" pattern="[0-9]{8}" required>
-      <input type="text" name="fecha" placeholder="Ingrese fecha (DD/MM/AAAA)" pattern="^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[012])/[0-9]{4}$" required>
-      <button type="submit">Consultar</button>
+      <button type="submit"><i class="fas fa-search"></i> Consultar</button>
     </form>
 
     {% if error %}
       <div class="error-msg">
-        <div class="error-icon">✖</div>
+        <div class="error-icon"><i class="fas fa-times"></i></div>
         {{ error }}
       </div>
     {% endif %}
