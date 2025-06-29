@@ -130,25 +130,32 @@ def agregar_dato():
 @app.route("/eliminar_dato", methods=["POST"])
 def eliminar_dato():
     dni = request.json.get("dni")
+
     if not dni:
         return "DNI no proporcionado", 400
 
     data_path = os.path.join(DATA_DIR, "data.json")
+
     if not os.path.exists(data_path):
         return "Archivo data.json no existe", 404
 
-    with open(data_path, "r", encoding="utf-8") as f:
-        data = json.load(f)
+    try:
+        with open(data_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except:
+        data = []
 
-    nueva_lista = [p for p in data if str(p.get("dni")) != str(dni)]
+    # Eliminar persona con ese DNI
+    nueva_data = [p for p in data if str(p.get("dni")) != str(dni)]
 
     with open(data_path, "w", encoding="utf-8") as f:
-        json.dump(nueva_lista, f, indent=2, ensure_ascii=False)
+        json.dump(nueva_data, f, indent=2, ensure_ascii=False)
 
+    # Eliminar del diccionario IMAGENES_DNI si está
     if dni in IMAGENES_DNI:
         del IMAGENES_DNI[dni]
 
-    return "Eliminado", 200
+    return "Eliminado correctamente", 200
 
 # === NUEVA RUTA PARA RECIBIR DATOS ===
 @app.route("/api/subir_dato", methods=["POST"])
